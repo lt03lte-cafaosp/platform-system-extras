@@ -264,6 +264,7 @@ static int read_maps(pm_process_t *proc) {
             for (; maps_count > 0; maps_count--)
                 pm_map_destroy(maps[maps_count]);
             free(maps);
+            fclose(maps_f);
             return error;
         }
         strcpy(map->name, name);
