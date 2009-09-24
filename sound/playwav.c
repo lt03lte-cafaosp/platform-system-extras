@@ -51,6 +51,7 @@ int pcm_play(unsigned rate, unsigned channels,
 
     if(ioctl(afd, AUDIO_GET_CONFIG, &config)) {
         perror("could not get config");
+        close(afd);
         return -1;
     }
 
@@ -160,6 +161,7 @@ int wav_play(const char *fn)
 	}
 	if (read(fd, &hdr, sizeof(hdr)) != sizeof(hdr)) {
         fprintf(stderr, "playwav: cannot read header\n");
+        close(fd);
 		return -1;
 	}
     fprintf(stderr,"playwav: %d ch, %d hz, %d bit, %s\n",
