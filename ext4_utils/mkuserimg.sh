@@ -26,6 +26,7 @@ OUTPUT_FILE=$2
 EXT_VARIANT=$3
 MOUNT_POINT=$4
 SIZE=$5
+EXTRA_ARGS=
 
 case $EXT_VARIANT in
   ext4) ;;
@@ -41,8 +42,12 @@ if [ -z $SIZE ]; then
     SIZE=128M
 fi
 
+if [ $SIZE -lt 8192000 ]; then
+    EXTRA_ARGS="-b 1024"
+fi
+
 echo "make_ext4fs -l $SIZE -a $MOUNT_POINT $OUTPUT_FILE $SRC_DIR"
-make_ext4fs -s -l $SIZE -a $MOUNT_POINT $OUTPUT_FILE $SRC_DIR
+make_ext4fs -l $SIZE -a $MOUNT_POINT $EXTRA_ARGS $OUTPUT_FILE $SRC_DIR
 if [ $? -ne 0 ]; then
   exit 4
 fi
