@@ -44,6 +44,8 @@ fi
 
 if [ $SIZE -lt 8192000 ]; then
     EXTRA_ARGS="-b 1024"
+else
+    EXTRA_ARGS="-s"
 fi
 
 echo "make_ext4fs -l $SIZE -a $MOUNT_POINT $OUTPUT_FILE $SRC_DIR"
