@@ -218,6 +218,14 @@ static u32 compute_inodes_per_group()
 	return DIV_ROUND_UP(info.inodes, block_groups);
 }
 
+static u32 adjust_inodes()
+{
+	u32 blocks = DIV_ROUND_UP(info.len, info.block_size);
+	u32 block_groups = DIV_ROUND_UP(blocks, info.blocks_per_group);
+	u32 inodes = DIV_ROUND_UP(info.inodes, block_groups * 8) * block_groups * 8;
+	return inodes;
+}
+
 void reset_ext4fs_info() {
     // Reset all the global data structures used by make_ext4fs so it
     // can be called again.
@@ -262,6 +270,8 @@ int make_ext4fs(const char *filename, const char *directory,
 
 	if (info.label == NULL)
 		info.label = "";
+
+	info.inodes = adjust_inodes();
 
 	info.inodes_per_group = compute_inodes_per_group();
 
