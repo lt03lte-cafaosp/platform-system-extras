@@ -17,7 +17,7 @@
 LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE_TAGS := eng tests
+LOCAL_MODULE_TAGS := debug tests
 LOCAL_MODULE_PATH := $(TARGET_OUT_DATA)/nativebenchmark
 
 LOCAL_STATIC_LIBRARIES += \

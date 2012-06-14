@@ -29,7 +29,7 @@ LOCAL_SRC_FILES = \
 	testcase.cpp
 
 LOCAL_MODULE := sdcard_perf_test
-LOCAL_MODULE_TAGS := eng tests
+LOCAL_MODULE_TAGS := debug tests
 LOCAL_SHARED_LIBRARIES := libutils libhardware_legacy
 
 include $(BUILD_EXECUTABLE)
