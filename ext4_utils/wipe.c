@@ -30,28 +30,47 @@
 #define BLKSECDISCARD _IO(0x12,125)
 #endif
 
+#define MAX_DISCARD_BLOCK 0xfff80000ull
+
 int wipe_block_device(int fd, s64 len)
 {
-	u64 range[2];
-	int ret;
+	u64 range[2], parm[2];
+	u64 offset = 0;
+	int ret, rc = 0;
 
-	range[0] = 0;
-	range[1] = len;
-	ret = ioctl(fd, BLKSECDISCARD, &range);
-	if (ret < 0) {
-		range[0] = 0;
-		range[1] = len;
-		ret = ioctl(fd, BLKDISCARD, &range);
+	while (len > 0) {
+		parm[0] = range[0] = offset;
+		parm[1] = range[1] = (len > MAX_DISCARD_BLOCK) ? MAX_DISCARD_BLOCK : len;
+		len -= range[1];
+		offset += range[1];
+
+		warn("Wiping from offset %llu for %llu bytes (%lld bytes remaining)", range[0], range[1], len);
+
+		ret = (rc == 0) ? ioctl(fd, BLKSECDISCARD, &range) : -1;
 		if (ret < 0) {
-			warn("Discard failed\n");
-			return 1;
-		} else {
-			warn("Wipe via secure discard failed, used discard instead\n");
-			return 0;
+			rc = 1;  // indicates secure discard failed
+			range[0] = parm[0];
+			range[1] = parm[1];
+			ret = ioctl(fd, BLKDISCARD, &range);
+			if (ret < 0) {
+				rc = 2;
+				break;
+			}
 		}
 	}
 
-	return 0;
+	switch (rc) {
+	case 1:
+		warn("Wipe via secure discard failed, used discard instead\n");
+		break;
+	case 2:
+		warn("Discard failed\n");
+		break;
+	default:
+		;  // success
+	}
+
+	return (rc != 0);
 }
 #else
 int wipe_block_device(int fd, s64 len)
