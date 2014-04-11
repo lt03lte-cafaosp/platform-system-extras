@@ -322,7 +322,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (has_swap) {
-        printf("%6ldK  ", total_swap);
+        printf("%6ldK  ", total_swap / 1024);
     }
 
     printf("TOTAL\n");
