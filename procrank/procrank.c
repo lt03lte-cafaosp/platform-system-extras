@@ -29,10 +29,12 @@ struct proc_info {
     pid_t pid;
     pm_memusage_t usage;
     unsigned long wss;
+    int adj;
 };
 
 static void usage(char *myname);
 static int getprocname(pid_t pid, char *buf, int len);
+static int getprocadj(pid_t pid);
 static int numcmp(long long a, long long b);
 
 #define declare_sort(field) \
@@ -43,6 +45,7 @@ declare_sort(rss);
 declare_sort(pss);
 declare_sort(uss);
 declare_sort(swap);
+declare_sort(adj);
 
 int (*compfn)(const void *a, const void *b);
 static int order;
@@ -145,6 +148,7 @@ int main(int argc, char *argv[]) {
     ws = WS_OFF;
 
     for (arg = 1; arg < argc; arg++) {
+        if (!strcmp(argv[arg], "-o")) { compfn = &sort_by_adj; continue; }
         if (!strcmp(argv[arg], "-v")) { compfn = &sort_by_vss; continue; }
         if (!strcmp(argv[arg], "-r")) { compfn = &sort_by_rss; continue; }
         if (!strcmp(argv[arg], "-p")) { compfn = &sort_by_pss; continue; }
@@ -216,6 +220,8 @@ int main(int argc, char *argv[]) {
             has_swap = true;
         }
 
+        procs[i]->adj = getprocadj(procs[i]->pid);
+
         pm_process_destroy(proc);
     }
 
@@ -235,7 +241,7 @@ int main(int argc, char *argv[]) {
 
     qsort(procs, num_procs, sizeof(procs[0]), compfn);
 
-    printf("%5s  ", "PID");
+    printf("%5s  %5s  ", "PID", "Adj");
     if (ws) {
         printf("%s  %7s  %7s  ", "WRss", "WPss", "WUss");
         if (has_swap) {
@@ -268,7 +274,7 @@ int main(int argc, char *argv[]) {
         total_uss += procs[i]->usage.uss;
         total_swap += procs[i]->usage.swap;
 
-        printf("%5d  ", procs[i]->pid);
+        printf("%5d  %5d  ", procs[i]->pid, procs[i]->adj);
 
         if (ws) {
             printf("%6dK  %6dK  %6dK  ",
@@ -297,7 +303,7 @@ int main(int argc, char *argv[]) {
     free(procs);
 
     /* Print the separator line */
-    printf("%5s  ", "");
+    printf("%5s  %5s  ", "", "");
 
     if (ws) {
         printf("%7s  %7s  %7s  ", "", "------", "------");
@@ -312,7 +318,7 @@ int main(int argc, char *argv[]) {
     printf("%s\n", "------");
 
     /* Print the total line */
-    printf("%5s  ", "");
+    printf("%5s  %5s  ", "", "");
     if (ws) {
         printf("%7s  %6ldK  %6ldK  ",
             "", total_pss / 1024, total_uss / 1024);
@@ -335,6 +341,7 @@ int main(int argc, char *argv[]) {
 
 static void usage(char *myname) {
     fprintf(stderr, "Usage: %s [ -W ] [ -v | -r | -p | -u | -s | -h ]\n"
+                    "    -o  Sort by oom_adj.\n"
                     "    -v  Sort by VSS.\n"
                     "    -r  Sort by RSS.\n"
                     "    -p  Sort by PSS.\n"
@@ -410,11 +417,47 @@ exit:
     return rc;
 }
 
+static int getprocadj(pid_t pid) {
+    char *filename;
+    FILE *f;
+    char adj_str[10];
+    int oom_adj, invalid_adj = 9999;
+
+    if (asprintf(&filename, "/proc/%zd/oom_adj", pid) < 0) {
+        return invalid_adj;
+    }
+
+    f = fopen(filename, "r");
+    if (f == NULL) {
+        free(filename);
+        return invalid_adj;
+    }
+
+    if (fgets(adj_str, sizeof(adj_str), f) == NULL) {
+        (void) fclose(f);
+        free(filename);
+        return invalid_adj;
+    }
+
+    (void) fclose(f);
+    free(filename);
+    oom_adj = atoi(adj_str);
+    return oom_adj;
+}
+
 static int numcmp(long long a, long long b) {
     if (a < b) return -1;
     if (a > b) return 1;
     return 0;
 }
+
+#define create_sort_field(field, compfn) \
+    static int sort_by_ ## field (const void *a, const void *b) { \
+        return order * compfn( \
+            (*((struct proc_info**)a))->field, \
+            (*((struct proc_info**)b))->field \
+        ); \
+    }
 
 #define create_sort(field, compfn) \
     static int sort_by_ ## field (const void *a, const void *b) { \
@@ -429,3 +472,4 @@ create_sort(rss, numcmp)
 create_sort(pss, numcmp)
 create_sort(uss, numcmp)
 create_sort(swap, numcmp)
+create_sort_field(adj, numcmp)
