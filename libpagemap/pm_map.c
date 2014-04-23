@@ -46,8 +46,12 @@ int pm_map_usage_flags(pm_map_t *map, pm_memusage_t *usage_out,
     for (i = 0; i < len; i++) {
         usage.vss += map->proc->ker->pagesize;
 
-        if (!PM_PAGEMAP_PRESENT(pagemap[i]))
+        if (!PM_PAGEMAP_PRESENT(pagemap[i])) {
+            if (PM_PAGEMAP_SWAPPED(pagemap[i])) {
+                usage.swap += map->proc->ker->pagesize;
+            }
             continue;
+        }
 
         if (!PM_PAGEMAP_SWAPPED(pagemap[i])) {
             if (flags_mask) {
@@ -67,8 +71,6 @@ int pm_map_usage_flags(pm_map_t *map, pm_memusage_t *usage_out,
             usage.rss += (count >= 1) ? map->proc->ker->pagesize : (0);
             usage.pss += (count >= 1) ? (map->proc->ker->pagesize / count) : (0);
             usage.uss += (count == 1) ? (map->proc->ker->pagesize) : (0);
-        } else {
-            usage.swap += map->proc->ker->pagesize;
         }
     }
 
