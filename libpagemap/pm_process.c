@@ -27,6 +27,7 @@
 #include "pm_map.h"
 
 static int read_maps(pm_process_t *proc);
+static int read_smaps(pm_process_t *proc);
 
 #define MAX_FILENAME 64
 
@@ -65,6 +66,12 @@ int pm_process_create(pm_kernel_t *ker, pid_t pid, pm_process_t **proc_out) {
         return error;
     }
 
+    error = read_smaps(proc);
+    if (error) {
+        free(proc);
+        return error;
+    }
+
     *proc_out = proc;
 
     return 0;
@@ -91,6 +98,7 @@ int pm_process_usage_flags(pm_process_t *proc, pm_memusage_t *usage_out,
     }
 
     memcpy(usage_out, &usage, sizeof(pm_memusage_t));
+    usage_out->swap = proc->swap;
 
     return 0;
 
@@ -316,3 +324,44 @@ static int read_maps(pm_process_t *proc) {
 
     return 0;
 }
+
+static int read_smaps(pm_process_t *proc) {
+    char filename[MAX_FILENAME];
+    char line[MAX_LINE];
+    FILE *smaps_f;
+    int error;
+    int swap = 0;
+
+    if (!proc)
+        return -1;
+
+    error = snprintf(filename, MAX_FILENAME, "/proc/%d/smaps", proc->pid);
+    if (error < 0 || error >= MAX_FILENAME)
+        return (error < 0) ? (errno) : (-1);
+
+    smaps_f = fopen(filename, "r");
+    if (!smaps_f)
+        return errno;
+
+    while (fgets(line, MAX_LINE, smaps_f)) {
+        if (strstr(line, "Swap:") != NULL) {
+            char *p = line + 5;
+
+            while (*p == ' ') p++;
+
+            char *num = p;
+            while (*p >= '0' && *p <= '9') p++;
+
+            if (*p != 0) {
+                *p = 0;
+            }
+            swap += atoi(num) * 1024;
+        }
+    }
+    fclose(smaps_f);
+
+    proc->swap = swap;
+
+    return 0;
+}
+
