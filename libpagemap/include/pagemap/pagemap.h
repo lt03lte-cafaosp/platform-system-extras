@@ -64,6 +64,7 @@ struct pm_process {
     int num_maps;
 
     int pagemap_fd;
+    size_t swap;
 };
 
 /* pm_map_t holds the state necessary to access information about a particular
