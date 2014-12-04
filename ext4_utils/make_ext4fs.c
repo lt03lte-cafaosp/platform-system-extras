@@ -504,8 +504,12 @@ int make_ext4fs_internal(int fd, const char *_directory,
 		directory = canonicalize_rel_slashes(_directory);
 	}
 
-	if (info.len <= 0)
+	if (info.len <= 0) {
 		info.len = get_file_size(fd);
+		if (info.len) {
+			info.len -= 16384; /* 16 KB left for crypto footer region */
+		}
+	}
 
 	if (info.len <= 0) {
 		fprintf(stderr, "Need size of filesystem\n");
