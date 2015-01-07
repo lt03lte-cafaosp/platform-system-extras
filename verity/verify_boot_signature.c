@@ -112,7 +112,8 @@ static int get_signature_offset(int fd, off64_t *offset)
     *offset = page_align(hdr.page_size
                     + page_align(hdr.kernel_size,  hdr.page_size)
                     + page_align(hdr.ramdisk_size, hdr.page_size)
-                    + page_align(hdr.second_size,  hdr.page_size),
+                    + page_align(hdr.second_size,  hdr.page_size)
+                    + page_align(hdr.dt_size, hdr.page_size),
                 hdr.page_size);
 
     return 0;
