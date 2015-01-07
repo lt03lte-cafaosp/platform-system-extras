@@ -27,7 +27,7 @@ include $(BUILD_HOST_JAVA_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES := BootSignature.java KeystoreSigner.java Utils.java
-LOCAL_MODULE := BootKeystoreSigner
+LOCAL_MODULE := KeystoreSigner
 LOCAL_JAR_MANIFEST := KeystoreSigner.mf
 LOCAL_MODULE_TAGS := optional
 LOCAL_STATIC_JAVA_LIBRARIES := bouncycastle-host
