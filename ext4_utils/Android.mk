@@ -26,7 +26,6 @@ LOCAL_STATIC_LIBRARIES := \
     libsparse_host \
     libz
 ifneq ($(HOST_OS),windows)
-  LOCAL_STATIC_LIBRARIES += libselinux
 endif
 include $(BUILD_HOST_STATIC_LIBRARY)
 
@@ -42,7 +41,6 @@ LOCAL_STATIC_LIBRARIES += \
 ifeq ($(HOST_OS),windows)
   LOCAL_LDLIBS += -lws2_32
 else
-  LOCAL_SHARED_LIBRARIES += libselinux
   LOCAL_CFLAGS := -DHOST
 endif
 include $(BUILD_HOST_EXECUTABLE)
@@ -66,7 +64,6 @@ LOCAL_C_INCLUDES += system/core/logwrapper/include
 LOCAL_SHARED_LIBRARIES := \
     libcutils \
     libext2_uuid \
-    libselinux \
     libsparse \
     libz
 LOCAL_CFLAGS := -DREAL_UUID
@@ -77,7 +74,7 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(libext4_utils_src_files) \
     ext4_crypt_init_extensions.cpp
 LOCAL_MODULE := libext4_utils_static
-LOCAL_STATIC_LIBRARIES := \
+LOCAL_STATIC_LIBRARIES += \
     libsparse_static
 include $(BUILD_STATIC_LIBRARY)
 
@@ -89,7 +86,6 @@ LOCAL_SHARED_LIBRARIES := \
     libcutils \
     libext2_uuid \
     libext4_utils \
-    libselinux \
     libz
 LOCAL_CFLAGS := -DREAL_UUID
 include $(BUILD_EXECUTABLE)
@@ -100,7 +96,6 @@ LOCAL_SRC_FILES := ext2simg.c
 LOCAL_MODULE := ext2simg
 LOCAL_SHARED_LIBRARIES += \
     libext4_utils \
-    libselinux \
     libsparse \
     libz
 include $(BUILD_EXECUTABLE)
@@ -109,8 +104,6 @@ include $(BUILD_EXECUTABLE)
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES := ext2simg.c
 LOCAL_MODULE := ext2simg
-LOCAL_SHARED_LIBRARIES += \
-    libselinux
 LOCAL_STATIC_LIBRARIES += \
     libext4_utils_host \
     libsparse_host \

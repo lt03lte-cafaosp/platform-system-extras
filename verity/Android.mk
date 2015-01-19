@@ -39,7 +39,7 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := BootSignature.java VeritySigner.java Utils.java
 LOCAL_MODULE := BootSignature
 LOCAL_JAR_MANIFEST := BootSignature.mf
-LOCAL_MODULE_TAGS := optional
+#LOCAL_MODULE_TAGS := optional
 LOCAL_STATIC_JAVA_LIBRARIES := bouncycastle-host
 include $(BUILD_HOST_JAVA_LIBRARY)
 

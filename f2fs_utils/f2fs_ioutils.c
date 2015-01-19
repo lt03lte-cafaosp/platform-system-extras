@@ -76,9 +76,6 @@ struct selabel_handle;
 
 #else
 
-#include <selinux/selinux.h>
-#include <selinux/label.h>
-
 #define O_BINARY 0
 
 #endif
