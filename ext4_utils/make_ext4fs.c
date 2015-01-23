@@ -60,10 +60,6 @@
 
 #else
 
-#include <selinux/selinux.h>
-#include <selinux/label.h>
-#include <selinux/android.h>
-
 #define O_BINARY 0
 
 #endif
@@ -98,21 +94,7 @@ static u32 build_default_directory_structure(const char *dir_path,
 	inode_set_permissions(inode, dentries.mode,
 		dentries.uid, dentries.gid, dentries.mtime);
 
-#ifndef USE_MINGW
-	if (sehnd) {
-		char *path = NULL;
-		char *secontext = NULL;
-
-		asprintf(&path, "%slost+found", dir_path);
-		if (selabel_lookup(sehnd, &secontext, path, S_IFDIR) < 0) {
-			error("cannot lookup security context for %s", path);
-		} else {
-			inode_set_selinux(inode, secontext);
-			freecon(secontext);
-		}
-		free(path);
-	}
-#endif
+	(void) dir_path, sehnd;
 
 	return root_inode;
 }
@@ -202,16 +184,6 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 			error("can't set android permissions - built without android support");
 #endif
 		}
-#ifndef USE_MINGW
-		if (sehnd) {
-			if (selabel_lookup(sehnd, &dentries[i].secon, dentries[i].path, stat.st_mode) < 0) {
-				error("cannot lookup security context for %s", dentries[i].path);
-			}
-
-			if (dentries[i].secon && verbose)
-				printf("Labeling %s as %s\n", dentries[i].path, dentries[i].secon);
-		}
-#endif
 
 		if (S_ISREG(stat.st_mode)) {
 			dentries[i].file_type = EXT4_FT_REG_FILE;
@@ -253,10 +225,6 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		dentries[0].file_type = EXT4_FT_DIR;
 		dentries[0].uid = 0;
 		dentries[0].gid = 0;
-		if (sehnd) {
-			if (selabel_lookup(sehnd, &dentries[0].secon, dentries[0].path, dentries[0].mode) < 0)
-				error("cannot lookup security context for %s", dentries[0].path);
-		}
 		entries++;
 		dirs++;
 	}
@@ -605,22 +573,6 @@ int make_ext4fs_internal(int fd, const char *_directory,
 	root_mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 	inode_set_permissions(root_inode_num, root_mode, 0, 0, 0);
 
-#ifndef USE_MINGW
-	if (sehnd) {
-		char *secontext = NULL;
-
-		if (selabel_lookup(sehnd, &secontext, mountpoint, S_IFDIR) < 0) {
-			error("cannot lookup security context for %s", mountpoint);
-		}
-		if (secontext) {
-			if (verbose) {
-				printf("Labeling %s as %s\n", mountpoint, secontext);
-			}
-			inode_set_selinux(root_inode_num, secontext);
-		}
-		freecon(secontext);
-	}
-#endif
 
 	ext4_update_free();
 

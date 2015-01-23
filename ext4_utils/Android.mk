@@ -27,7 +27,6 @@ LOCAL_STATIC_LIBRARIES := \
     libsparse_host \
     libz
 ifneq ($(HOST_OS),windows)
-  LOCAL_STATIC_LIBRARIES += libselinux
 endif
 include $(BUILD_HOST_STATIC_LIBRARY)
 
@@ -42,7 +41,6 @@ LOCAL_STATIC_LIBRARIES += \
 ifeq ($(HOST_OS),windows)
   LOCAL_LDLIBS += -lws2_32
 else
-  LOCAL_STATIC_LIBRARIES += libselinux
   LOCAL_CFLAGS := -DHOST
 endif
 include $(BUILD_HOST_EXECUTABLE)
@@ -58,7 +56,6 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(libext4_utils_src_files)
 LOCAL_MODULE := libext4_utils
 LOCAL_SHARED_LIBRARIES := \
-    libselinux \
     libsparse \
     libz
 include $(BUILD_SHARED_LIBRARY)
@@ -68,7 +65,6 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(libext4_utils_src_files)
 LOCAL_MODULE := libext4_utils_static
 LOCAL_STATIC_LIBRARIES += \
-    libselinux \
     libsparse_static
 include $(BUILD_STATIC_LIBRARY)
 
@@ -78,7 +74,6 @@ LOCAL_SRC_FILES := make_ext4fs_main.c canned_fs_config.c
 LOCAL_MODULE := make_ext4fs
 LOCAL_SHARED_LIBRARIES := \
     libext4_utils \
-    libselinux \
     libz
 include $(BUILD_EXECUTABLE)
 
@@ -88,7 +83,6 @@ LOCAL_SRC_FILES := ext2simg.c
 LOCAL_MODULE := ext2simg
 LOCAL_SHARED_LIBRARIES += \
     libext4_utils \
-    libselinux \
     libsparse \
     libz
 include $(BUILD_EXECUTABLE)
@@ -99,7 +93,6 @@ LOCAL_SRC_FILES := ext2simg.c
 LOCAL_MODULE := ext2simg
 LOCAL_STATIC_LIBRARIES += \
     libext4_utils_host \
-    libselinux \
     libsparse_host \
     libz
 include $(BUILD_HOST_EXECUTABLE)
