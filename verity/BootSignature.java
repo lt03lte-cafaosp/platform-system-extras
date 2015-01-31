@@ -89,7 +89,8 @@ public class BootSignature extends ASN1Object
 
     public byte[] sign(byte[] image, PrivateKey key) throws Exception {
         byte[] signable = generateSignableImage(image);
-        byte[] signature = Utils.sign(key, signable);
+        setSignature(Utils.sign(key, signable));
+        byte[] signature = getEncoded();
         byte[] signed = Arrays.copyOf(image, image.length + signature.length);
         for (int i=0; i < signature.length; i++) {
             signed[i+image.length] = signature[i];
