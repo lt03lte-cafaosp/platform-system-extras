@@ -27,7 +27,7 @@ public class VeritySigner {
     public static void main(String[] args) throws Exception {
         byte[] content = Utils.read(args[0]);
         PrivateKey privateKey = Utils.loadPEMPrivateKey(Utils.read(args[1]));
-        byte[] signature = Utils.sign(privateKey, content);
+        byte[] signature = Utils.sign(privateKey, content, "SHA1withRSA");
         Utils.write(signature, args[2]);
     }
 }
