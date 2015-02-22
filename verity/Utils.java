@@ -128,11 +128,15 @@ public class Utils {
         return loadDERPublicKey(read(keyFname));
     }
 
-    static byte[] sign(PrivateKey privateKey, byte[] input) throws Exception {
-        Signature signer = Signature.getInstance("SHA256withRSA");
+    static byte[] sign(PrivateKey privateKey, byte[] input, String hashType) throws Exception {
+        Signature signer = Signature.getInstance(hashType);
         signer.initSign(privateKey);
         signer.update(input);
         return signer.sign();
+    }
+
+    static byte[] sign(PrivateKey privateKey, byte[] input) throws Exception {
+        return sign(privateKey, input, "SHA256withRSA");
     }
 
     static byte[] read(String fname) throws Exception {
