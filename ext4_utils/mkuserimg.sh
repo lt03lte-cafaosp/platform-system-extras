@@ -5,7 +5,7 @@
 function usage() {
 cat<<EOT
 Usage:
-mkuserimg.sh [-s] SRC_DIR OUTPUT_FILE EXT_VARIANT MOUNT_POINT SIZE
+mkuserimg.sh [-s] SRC_DIR OUTPUT_FILE EXT_VARIANT MOUNT_POINT SIZE [-j <journal_size>]
              [-T TIMESTAMP] [-C FS_CONFIG] [-B BLOCK_LIST_FILE] [FILE_CONTEXTS]
 EOT
 }
@@ -32,6 +32,16 @@ EXT_VARIANT=$3
 MOUNT_POINT=$4
 SIZE=$5
 shift; shift; shift; shift; shift
+
+JOURNAL_FLAGS=
+if [ "$1" = "-j" ]; then
+  if [ "$2" = "0" ]; then
+    JOURNAL_FLAGS="-J"
+  else
+    JOURNAL_FLAGS="-j $2"
+  fi
+  shift; shift
+fi
 
 TIMESTAMP=-1
 if [[ "$1" == "-T" ]]; then
@@ -79,7 +89,7 @@ if [ -n "$BLOCK_LIST" ]; then
   OPT="$OPT -B $BLOCK_LIST"
 fi
 
-MAKE_EXT4FS_CMD="make_ext4fs $ENABLE_SPARSE_IMAGE -T $TIMESTAMP $OPT -l $SIZE -a $MOUNT_POINT $OUTPUT_FILE $SRC_DIR"
+MAKE_EXT4FS_CMD="make_ext4fs $ENABLE_SPARSE_IMAGE -T $TIMESTAMP $OPT -l $SIZE $JOURNAL_FLAGS -a $MOUNT_POINT $OUTPUT_FILE $SRC_DIR"
 echo $MAKE_EXT4FS_CMD
 vmstat 1 &
 statpid=$!
@@ -87,6 +97,8 @@ $MAKE_EXT4FS_CMD
 if [ $? -ne 0 ]; then
   echo "Ext image generation failed 1st time"
   ps aux
+  lsof
+  ls -Rl $SRC_DIR
   echo "Image generation retry. 2nd time"
   sleep 1m
   echo $MAKE_EXT4FS_CMD
@@ -107,3 +119,4 @@ if [ $? -ne 0 ]; then
   fi
 fi
 kill $statpid
+
