@@ -20,9 +20,22 @@
 
 #ifdef HAVE_ANDROID_OS
 #include <linux/capability.h>
-#else
-#include <private/android_filesystem_capability.h>
 #endif
+
+#ifdef HOST
+#include <stdint.h>
+#define VFS_CAP_U32 2
+#define VFS_CAP_REVISION 0x02000000
+#define VFS_CAP_FLAGS_EFFECTIVE 0x000001
+
+struct vfs_cap_data {
+ uint32_t magic_etc;
+ struct {
+ uint32_t permitted;
+ uint32_t inheritable;
+ } data[VFS_CAP_U32];
+};
+#endif /* HOST */
 
 #define XATTR_SELINUX_SUFFIX "selinux"
 #define XATTR_CAPS_SUFFIX "capability"

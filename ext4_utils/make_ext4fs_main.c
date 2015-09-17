@@ -29,7 +29,7 @@
 #include <private/android_filesystem_config.h>
 #endif
 
-#ifndef USE_MINGW
+#if !defined(USE_MINGW) && defined(USE_SELINUX)
 #include <selinux/selinux.h>
 #include <selinux/label.h>
 #include <selinux/android.h>
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 	int exitcode;
 	int verbose = 0;
 	struct selabel_handle *sehnd = NULL;
-#ifndef USE_MINGW
+#if !defined(USE_MINGW) && defined(USE_SELINUX)
 	struct selinux_opt seopts[] = { { SELABEL_OPT_PATH, "" } };
 #endif
 
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 			fprintf(stderr, "Warning: -t (initialize inode tables) is deprecated\n");
 			break;
 		case 'S':
-#ifndef USE_MINGW
+#if !defined(USE_MINGW) && defined(USE_SELINUX)
 			seopts[0].value = optarg;
 			sehnd = selabel_open(SELABEL_CTX_FILE, seopts, 1);
 			if (!sehnd) {
