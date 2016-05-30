@@ -8,7 +8,7 @@
 #include <errno.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
-
+#include <unistd.h>
 #include <cutils/klog.h>
 #include <cutils/properties.h>
 #include <cutils/sockets.h>

@@ -8,6 +8,7 @@
 
 #include <dirent.h>
 #include <errno.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -15,6 +16,7 @@
 #include <asm/ioctl.h>
 #include <sys/syscall.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
 #include <sys/types.h>
 
 #include <cutils/klog.h>

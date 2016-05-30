@@ -1,6 +1,8 @@
 #include "unencrypted_properties.h"
 
 #include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <stdio.h>
 #include <dirent.h>
 
 namespace properties {
