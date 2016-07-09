@@ -15,36 +15,24 @@ libext4_utils_cpp_sources += ext4_crypt.cpp
 libext4_utils_cpp_sources += unencrypted_properties.cpp
 
 if BUILD_DEVICE
-### Build static ext4_utils library
-lib_LIBRARIES := libext4_utils.a
-
-libext4_utils_a_SOURCES  := $(libext4_utils_c_sources) $(libext4_utils_cpp_sources) ext4_crypt_init_extensions.cpp
-libext4_utils_a_CPPFLAGS := $(LIBSELINUX_CFLAGS) $(LIBSPARSE_CFLAGS)
-libext4_utils_a_CPPFLAGS += -std=c++11
-libext4_utils_a_LDFLAGS := $(LIBSELINUX_LIBS) $(LIBSPARSE_LIBS)
-libext4_utils_a_LDFLAGS += -lcutils -lsparse
-
-# Build a shared lib too
+# Build a shared lib
 lib_LTLIBRARIES := libext4_utils.la
+
 libext4_utils_la_SOURCES  := $(libext4_utils_c_sources) $(libext4_utils_cpp_sources)
-libext4_utils_la_CPPFLAGS := $(libext4_utils_a_CPPFLAGS)
-libext4_utils_la_LDFLAGS  := $(libext4_utils_a_LDFLAGS)
+libext4_utils_la_CPPFLAGS := $(LIBSELINUX_CFLAGS) $(LIBSPARSE_CFLAGS)
+libext4_utils_la_CPPFLAGS += -std=c++11
+libext4_utils_la_LDFLAGS  := $(LIBSELINUX_LIBS) $(LIBSPARSE_LIBS)
+libext4_utils_la_LDFLAGS  += -lcutils -lsparse
 endif
 
 if BUILD_HOST
-### Build static ext4_utils library for host
-lib_LIBRARIES := libext4_utils.a
-
-libext4_utils_a_SOURCES  := $(libext4_utils_c_sources)
-libext4_utils_a_CPPFLAGS := $(LIBSELINUX_CFLAGS) $(LIBSPARSE_CFLAGS)
-libext4_utils_a_LDFLAGS := $(LIBSELINUX_LIBS) $(LIBSPARSE_LIBS)
-libext4_utils_a_LDFLAGS += -lcutils -lsparse
-
-# Build a shared lib too
+# Build a shared lib
 lib_LTLIBRARIES := libext4_utils.la
+
 libext4_utils_la_SOURCES  := $(libext4_utils_c_sources)
-libext4_utils_la_CPPFLAGS := $(libext4_utils_a_CPPFLAGS)
-libext4_utils_la_LDFLAGS  := $(libext4_utils_a_LDFLAGS)
+libext4_utils_la_CPPFLAGS := $(LIBSELINUX_CFLAGS) $(LIBSPARSE_CFLAGS)
+libext4_utils_la_LDFLAGS  := $(LIBSELINUX_LIBS) $(LIBSPARSE_LIBS)
+libext4_utils_la_LDFLAGS  += -lcutils -lsparse
 
 ### Build make_ext4fs binary
 bin_PROGRAMS = make_ext4fs
