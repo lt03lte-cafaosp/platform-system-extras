@@ -24,11 +24,6 @@
   # Build all components by default
   # To add new components: add AC_ARG_ENABLE, AM_CONDITIONAL and update AC_OUTPUT
 
-  # Checks for libraries.
-  PKG_CHECK_MODULES([LIBSELINUX], [libselinux])
-  AC_SUBST([LIBSELINUX_CFLAGS])
-  AC_SUBST([LIBSELINUX_LIBS])
-
   PKG_CHECK_MODULES([LIBSPARSE], [libsparse])
   AC_SUBST([LIBSPARSE_CFLAGS])
   AC_SUBST([LIBSPARSE_LIBS])

@@ -21,8 +21,8 @@ lib_LTLIBRARIES := libext4_utils.la
 libext4_utils_la_SOURCES  := $(libext4_utils_c_sources) $(libext4_utils_cpp_sources)
 libext4_utils_la_CPPFLAGS := $(LIBSELINUX_CFLAGS) $(LIBSPARSE_CFLAGS)
 libext4_utils_la_CPPFLAGS += -std=c++11
-libext4_utils_la_LDFLAGS  := $(LIBSELINUX_LIBS) $(LIBSPARSE_LIBS)
-libext4_utils_la_LDFLAGS  += -lcutils -lsparse
+libext4_utils_la_LDFLAGS  := $(LIBSPARSE_LIBS)
+libext4_utils_la_LDFLAGS  += -lcutils -lsparse -lselinux
 endif
 
 if BUILD_HOST
@@ -31,8 +31,8 @@ lib_LTLIBRARIES := libext4_utils.la
 
 libext4_utils_la_SOURCES  := $(libext4_utils_c_sources)
 libext4_utils_la_CPPFLAGS := $(LIBSELINUX_CFLAGS) $(LIBSPARSE_CFLAGS)
-libext4_utils_la_LDFLAGS  := $(LIBSELINUX_LIBS) $(LIBSPARSE_LIBS)
-libext4_utils_la_LDFLAGS  += -lcutils -lsparse
+libext4_utils_la_LDFLAGS  := $(LIBSPARSE_LIBS)
+libext4_utils_la_LDFLAGS  += -lcutils -lsparse -lselinux
 
 ### Build make_ext4fs binary
 bin_PROGRAMS = make_ext4fs
