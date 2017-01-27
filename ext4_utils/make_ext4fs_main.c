@@ -111,13 +111,7 @@ int main(int argc, char **argv)
 			force = 1;
 			break;
 		case 'a':
-#ifdef ANDROID
 			mountpoint = optarg;
-#else
-			fprintf(stderr, "can't set android permissions - built without android support\n");
-			usage(argv[0]);
-			exit(EXIT_FAILURE);
-#endif
 			break;
 		case 'w':
 			wipe = 1;
@@ -191,7 +185,9 @@ int main(int argc, char **argv)
 		}
 		fs_config_func = canned_fs_config;
 	} else if (mountpoint) {
+#ifdef ANDROID
 		fs_config_func = fs_config;
+#endif
 	}
 
 	if (wipe && sparse) {
