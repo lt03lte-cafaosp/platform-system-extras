@@ -206,8 +206,6 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 			dentries[i].uid = uid;
 			dentries[i].gid = gid;
 			dentries[i].capabilities = capabilities;
-#else
-			error("can't set android permissions - built without android support");
 #endif
 		}
 #ifndef USE_MINGW
